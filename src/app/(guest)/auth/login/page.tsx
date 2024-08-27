@@ -1,10 +1,12 @@
-import Login from '@/components/auth/login'
-import React from 'react'
+import { auth } from "@/auth";
+import Login from "@/components/auth/login";
 
-const LoginPage = () => {
-  return (
-    <Login />
-  )
+const LoginPage = async () => {
+    const session = await auth()
+    console.log("check session", session)
+    return (
+        <Login />
+    )
 }
 
-export default LoginPage
+export default LoginPage;

@@ -1,40 +1,32 @@
-'use client'
-import AdminContent from '@/components/admin/admin.content';
-import AdminFooter from '@/components/admin/admin.footer';
-import AdminSidebar from '@/components/admin/admin.sidebar';
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
-import { Button, Layout } from 'antd';
-import { Header } from 'antd/es/layout/layout';
-import React, { useState } from 'react'
+import { auth } from '@/auth';
+import AdminContent from '@/components/layout/admin.content';
+import AdminFooter from '@/components/layout/admin.footer';
+import AdminHeader from '@/components/layout/admin.header';
+import AdminSideBar from '@/components/layout/admin.sidebar';
+import { AdminContextProvider } from '@/library/admin.context';
 
-const AdminLayout = ({
+const AdminLayout = async ({
     children,
-  }: Readonly<{
+}: Readonly<{
     children: React.ReactNode;
-  }>) => {
-    const [collapsed, setCollapsed] = useState(false);
- 
-  return (
-    <Layout>
-    <AdminSidebar collapsed={collapsed} />
-    <Layout>
-    <Header style={{ padding: 0 }}>
-        <Button
-        type="text"
-        icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        onClick={() => setCollapsed(!collapsed)}
-        style={{
-            fontSize: '16px',
-            width: 64,
-            height: 64,
-        }}
-        />
-    </Header>
-    <AdminContent>{children}</AdminContent>
-    <AdminFooter />
-    </Layout>
-</Layout>
-  )
+}>) => {
+    const session = await auth()    
+    return (
+        <AdminContextProvider>
+            <div style={{ display: "flex" }}>
+                <div className='left-side' style={{ minWidth: 80 }}>
+                    <AdminSideBar />
+                </div>
+                <div className='right-side' style={{ flex: 1 }}>
+                    <AdminHeader session={session} />
+                    <AdminContent>
+                        {children}
+                    </AdminContent>
+                    <AdminFooter />
+                </div>
+            </div>
+        </AdminContextProvider>
+    )
 }
 
 export default AdminLayout

@@ -18,7 +18,6 @@ const Register = () => {
                 email, password, name
             }
         })
-        console.log("res", res)
         if(res?.data){
             router.push(`/verify/${res?.data?._id}`)
         }else{

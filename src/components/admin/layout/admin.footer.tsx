@@ -6,7 +6,7 @@ const AdminFooter = () => {
 
     return (
         <>
-            <Footer style={{ textAlign: 'center' }}>
+            <Footer className='text-center'>
                 Hỏi Dân IT ©{new Date().getFullYear()} Created by @hoidanit
             </Footer>
         </>

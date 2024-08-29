@@ -11,7 +11,8 @@ import {
 import React, { useContext } from 'react';
 import { AdminContext } from "@/library/admin.context";
 import type { MenuProps } from 'antd';
-import Link from 'next/link'
+import Link from 'next/link';
+import './admin.sidebar.scss'
 
 type MenuItem = Required<MenuProps>['items'][number];
 const AdminSideBar = () => {
@@ -22,17 +23,22 @@ const AdminSideBar = () => {
 
         {
             key: 'grp',
-            label: 'Hỏi Dân IT',
+            label: <div className="centered-menu-title">AzStore</div>,
             type: 'group',
             children: [
                 {
                     key: "dashboard",
-                    label: <Link href={"/dashboard"}>Dashboard</Link>,
+                    label: <Link href={"/admin"}>Dashboard</Link>,
                     icon: <AppstoreOutlined />,
                 },
                 {
                     key: "users",
-                    label: <Link href={"/dashboard/user"}>Manage Users</Link>,
+                    label: <Link href={"/admin/user"}>Manage Users</Link>,
+                    icon: <TeamOutlined />,
+                },
+                {
+                    key: "product",
+                    label: <Link href={"/admin/product"}>Manage Product</Link>,
                     icon: <TeamOutlined />,
                 },
                 {

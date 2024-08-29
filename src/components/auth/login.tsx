@@ -30,7 +30,7 @@ const Login = () => {
             })
            
         }else{
-            router.push("/dashboard")
+            router.push("/admin")
         }
 
     };

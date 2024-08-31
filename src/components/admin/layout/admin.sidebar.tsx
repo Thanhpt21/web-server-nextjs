@@ -3,8 +3,11 @@ import Layout from "antd/es/layout";
 import Menu from "antd/es/menu";
 import {
     AppstoreOutlined,
+    HomeOutlined,
     MailOutlined,
+    ProductOutlined,
     SettingOutlined,
+    SkinOutlined,
     TeamOutlined,
 
 } from '@ant-design/icons';
@@ -28,36 +31,36 @@ const AdminSideBar = () => {
             children: [
                 {
                     key: "dashboard",
-                    label: <Link href={"/admin"}>Dashboard</Link>,
-                    icon: <AppstoreOutlined />,
+                    label: <Link href={"/admin"}>Thống kê</Link>,
+                    icon: <HomeOutlined />,
                 },
                 {
                     key: "users",
-                    label: <Link href={"/admin/user"}>Manage Users</Link>,
+                    label: <Link href={"/admin/user"}>Tài khoản</Link>,
                     icon: <TeamOutlined />,
                 },
                 {
                     key: "product",
-                    label: <Link href={"/admin/product"}>Manage Product</Link>,
-                    icon: <TeamOutlined />,
+                    label: <Link href={"/admin/product"}>Sản phẩm</Link>,
+                    icon: <SkinOutlined />,
                 },
                 {
-                    key: 'category',
+                    key: 'cate',
                     label: 'Danh mục',
-                    icon: <MailOutlined />,
+                    icon: <ProductOutlined />,
                     children: [
-                        { key: '1', label: <Link href={"/admin/category"}>Danh mục sản phẩm</Link> },
-                        { key: '2', label: 'Danh mục tin tức' },
+                        { key: 'category', label: <Link href={"/admin/category"}>Danh mục sản phẩm</Link> },
+                        { key: 'blog-category', label: <Link href={"/admin/blog-category"}>Danh mục tin tức</Link> },
                       
                     ],
                 },
                 {
-                    key: 'sub2',
-                    label: 'Navigation Two',
+                    key: 'properties',
+                    label: 'Thuộc tính',
                     icon: <AppstoreOutlined />,
                     children: [
-                        { key: '5', label: 'Option 5' },
-                        { key: '6', label: 'Option 6' },
+                        { key: 'color', label: 'Màu sắc' },
+                        { key: 'size', label: 'Kích thước' },
                         {
                             key: 'sub3',
                             label: 'Submenu',

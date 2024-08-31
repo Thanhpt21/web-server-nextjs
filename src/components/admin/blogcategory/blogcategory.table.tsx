@@ -3,9 +3,9 @@ import { Button, Popconfirm, Table } from "antd";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";
-import CategoryCreate from "./category.create";
-import CategoryUpdate from "./category.update";
-import { handleDeleteCategoryAction } from "@/utils/actions/category.action"; // Hàm xử lý xóa danh mục
+import BlogCategoryCreate from "./blogcategory.create"; 
+import BlogCategoryUpdate from "./blogcategory.update"; 
+import { handleDeleteBlogCategoryAction } from "@/utils/actions/blogcategory.action"; 
 
 interface IProps {
     data: any[],
@@ -15,11 +15,10 @@ interface IProps {
         pages: number,
         total: number
     },
-    token: any
 }
 
-const CategoryTable = (props: IProps) => {
-    const { data, meta, token } = props;
+const BlogCategoryTable = (props: IProps) => {
+    const { data, meta } = props;
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const { replace } = useRouter();
@@ -41,24 +40,9 @@ const CategoryTable = (props: IProps) => {
             }
         },
         {
-            title: 'Hình ảnh',
-            width: 100,
-            dataIndex: 'image',
-            render: (image: string) => (
-                <div className="flex justify-center items-center">
-                <img
-                    src={image}
-                    alt="Avatar"
-                    className="w-10 h-10 rounded-full object-cover"
-                />
-            </div>
-            ),
-        },
-        {
             title: 'Tiêu đề',
             dataIndex: 'title',
         },
-       
         {
             title: 'Hành động',
             width: 110,
@@ -77,7 +61,7 @@ const CategoryTable = (props: IProps) => {
                             placement="leftTop"
                             title="Xóa"
                             description="Bạn có chắc chắn muốn xóa danh mục này không?"
-                            onConfirm={() => handleDeleteCategoryAction(record._id)}
+                            onConfirm={() => handleDeleteBlogCategoryAction(record._id)}
                             okText="Có"
                             cancelText="Không"
                         >
@@ -107,7 +91,7 @@ const CategoryTable = (props: IProps) => {
                 alignItems: "center",
                 marginBottom: 20
             }}>
-                <span>Danh sách danh mục</span>
+                <span>Danh sách danh mục blog</span>
                 <Button
                     type="primary"
                     onClick={() => setIsCreateModalOpen(true)}
@@ -129,20 +113,18 @@ const CategoryTable = (props: IProps) => {
                 }}
                 onChange={onChange}
             />
-            <CategoryCreate
+            <BlogCategoryCreate
                 isCreateModalOpen={isCreateModalOpen}
                 setIsCreateModalOpen={setIsCreateModalOpen}
-                token={token}
             />
-            <CategoryUpdate
+            <BlogCategoryUpdate
                 isUpdateModalOpen={isUpdateModalOpen}
                 setIsUpdateModalOpen={setIsUpdateModalOpen}
                 dataUpdate={dataUpdate}
                 setDataUpdate={setDataUpdate}
-                token={token}
             />
         </>
     );
 }
 
-export default CategoryTable;
+export default BlogCategoryTable;

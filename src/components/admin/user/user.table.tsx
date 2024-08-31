@@ -35,22 +35,26 @@ const UserTable = (props: IProps) => {
             width: 20,
             render: (_: any, record: any, index: any) => {
                 return (
-                    <>{(index + 1) + (meta.current - 1)*(meta.pageSize)}</>
-                )
+                    <div className="flex justify-center items-center">
+                        {(index + 1) + (meta.current - 1) * (meta.pageSize)}
+                    </div>
+                );
             }
         },
         {
             title: 'Avatar',
             width: 50,
-            dataIndex: 'image', // Thay đổi dataIndex thành trường chứa URL của avatar
+            dataIndex: 'image',
             render: (image: string) => (
-                <img
-                    src={image}
-                    alt="Avatar"
-                    className="w-10 h-10 rounded-full object-cover"
-                />
+                <div className="flex justify-center items-center">
+                    <img
+                        src={image}
+                        alt="Avatar"
+                        className="w-10 h-10 rounded-full object-cover"
+                    />
+                </div>
             ),
-        },
+        },        
         {
             title: 'Tên',
             dataIndex: 'name',
@@ -69,13 +73,13 @@ const UserTable = (props: IProps) => {
             width: 110,
             render: (text: any, record: any, index: any) => {
                 return (
-                    <div className="flex justify-center items-center">
-                        <EditTwoTone 
+                    <div className="flex justify-center items-center space-x-4">
+                        <EditTwoTone
                             twoToneColor="#f57800"
-                            className="cursor-pointer mr-2"
+                            className="cursor-pointer"
                             onClick={() => {
-                                setIsUpdateModalOpen(true)
-                                setDataUpdate(record)
+                                setIsUpdateModalOpen(true);
+                                setDataUpdate(record);
                             }}
                         />
                         <Popconfirm
@@ -94,6 +98,7 @@ const UserTable = (props: IProps) => {
                 );
             }
         }
+        
     ];
     
 

@@ -7,7 +7,7 @@ const AdminFooter = () => {
     return (
         <>
             <Footer className='text-center'>
-                Hỏi Dân IT ©{new Date().getFullYear()} Created by @hoidanit
+                {new Date().getFullYear()} Tạo bởi AzStore
             </Footer>
         </>
     )

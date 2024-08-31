@@ -4,7 +4,7 @@ import UserCreate from "./user.create"
 import { usePathname, useSearchParams, useRouter } from "next/navigation"
 import { useState } from "react"
 import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons"
-import { handleDeleteUserAction } from "@/utils/actions"
+import { handleDeleteUserAction } from "@/utils/actions/user.actions"
 import UserUpdate from "./user.update"
 
 interface IProps {
@@ -14,11 +14,12 @@ interface IProps {
         pageSize: number,
         pages: number,
         total: number
-    }
+    },
+    token: any
 }
 
 const UserTable = (props: IProps) => {
-    const {data, meta} = props;
+    const {data, meta, token} = props;
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const {replace} = useRouter()
@@ -31,17 +32,30 @@ const UserTable = (props: IProps) => {
     const columns = [
         {
             title: 'STT',
+            width: 20,
             render: (_: any, record: any, index: any) => {
                 return (
                     <>{(index + 1) + (meta.current - 1)*(meta.pageSize)}</>
                 )
             }
         },
-      
+        {
+            title: 'Avatar',
+            width: 50,
+            dataIndex: 'image', // Thay đổi dataIndex thành trường chứa URL của avatar
+            render: (image: string) => (
+                <img
+                    src={image}
+                    alt="Avatar"
+                    className="w-10 h-10 rounded-full object-cover"
+                />
+            ),
+        },
         {
             title: 'Tên',
             dataIndex: 'name',
         },
+        
         {
             title: 'Email',
             dataIndex: 'email',
@@ -55,10 +69,10 @@ const UserTable = (props: IProps) => {
             width: 110,
             render: (text: any, record: any, index: any) => {
                 return (
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <div className="flex justify-center items-center">
                         <EditTwoTone 
                             twoToneColor="#f57800"
-                            style={{ cursor: "pointer", marginRight: '8px' }}
+                            className="cursor-pointer mr-2"
                             onClick={() => {
                                 setIsUpdateModalOpen(true)
                                 setDataUpdate(record)
@@ -72,7 +86,7 @@ const UserTable = (props: IProps) => {
                             okText="Xác nhận"
                             cancelText="Hủy"
                         >
-                            <span style={{ cursor: "pointer" }}>
+                            <span className="cursor-pointer">
                                 <DeleteTwoTone twoToneColor="#ff4d4f" />
                             </span>
                         </Popconfirm>
@@ -80,8 +94,8 @@ const UserTable = (props: IProps) => {
                 );
             }
         }
-        
     ];
+    
 
     const onChange = (pagination: any, filters: any, sorter: any, extra: any) => {
         if (pagination && pagination.current) {
@@ -139,6 +153,7 @@ const UserTable = (props: IProps) => {
               setIsUpdateModalOpen={setIsUpdateModalOpen}
               dataUpdate={dataUpdate}
               setDataUpdate={setDataUpdate}
+              token={token}
             />
         </>
     )

@@ -1,4 +1,4 @@
-import { handleCreateUserAction } from '@/utils/actions';
+import { handleCreateUserAction } from '@/utils/actions/user.actions';
 import { Modal, Form, Input, Button, message, notification } from 'antd';
 import React from 'react'
 
@@ -32,7 +32,7 @@ const UserCreate = (props: IProps) => {
   return (
     <Modal
     title="Tạo Người Dùng"
-    visible={isCreateModalOpen}
+    open={isCreateModalOpen}
     onCancel={handleCloseModal}
     footer={null} // Chúng ta sẽ sử dụng các nút trong form thay vì phần footer mặc định
 >

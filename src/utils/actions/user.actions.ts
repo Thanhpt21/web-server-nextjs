@@ -1,8 +1,10 @@
 'use server'
 
 import {auth, signIn} from "@/auth";
-import { sendRequest } from "./api";
+import { sendRequest } from "../api";
 import { revalidateTag } from "next/cache";
+
+
 
 export async function authenticate(username: string, password: string) {
     try {
@@ -33,6 +35,9 @@ export async function authenticate(username: string, password: string) {
        
     }
 }
+
+
+
 
 export const handleCreateUserAction = async (data: any) => {
     const session = await auth()

@@ -42,28 +42,13 @@ const AdminSideBar = () => {
                     icon: <TeamOutlined />,
                 },
                 {
-                    key: 'sub1',
-                    label: 'Navigation One',
+                    key: 'category',
+                    label: 'Danh mục',
                     icon: <MailOutlined />,
                     children: [
-                        {
-                            key: 'g1',
-                            label: 'Item 1',
-                            type: 'group',
-                            children: [
-                                { key: '1', label: 'Option 1' },
-                                { key: '2', label: 'Option 2' },
-                            ],
-                        },
-                        {
-                            key: 'g2',
-                            label: 'Item 2',
-                            type: 'group',
-                            children: [
-                                { key: '3', label: 'Option 3' },
-                                { key: '4', label: 'Option 4' },
-                            ],
-                        },
+                        { key: '1', label: <Link href={"/admin/category"}>Danh mục sản phẩm</Link> },
+                        { key: '2', label: 'Danh mục tin tức' },
+                      
                     ],
                 },
                 {

@@ -2,9 +2,11 @@
 import Layout from "antd/es/layout";
 import Menu from "antd/es/menu";
 import {
+    AppleOutlined,
     AppstoreOutlined,
     HomeOutlined,
     MailOutlined,
+    MonitorOutlined,
     ProductOutlined,
     SettingOutlined,
     SkinOutlined,
@@ -45,6 +47,16 @@ const AdminSideBar = () => {
                     icon: <SkinOutlined />,
                 },
                 {
+                    key: "blog",
+                    label: <Link href={"/admin/blog"}>Tin tức</Link>,
+                    icon: <MonitorOutlined />,
+                },
+                {
+                    key: "brand",
+                    label: <Link href={"/admin/brand"}>Thương hiệu</Link>,
+                    icon: <AppleOutlined />,
+                },
+                {
                     key: 'cate',
                     label: 'Danh mục',
                     icon: <ProductOutlined />,
@@ -59,8 +71,8 @@ const AdminSideBar = () => {
                     label: 'Thuộc tính',
                     icon: <AppstoreOutlined />,
                     children: [
-                        { key: 'color', label: 'Màu sắc' },
-                        { key: 'size', label: 'Kích thước' },
+                        { key: 'color', label: <Link href={"/admin/color"}>Màu sắc</Link> },
+                        { key: 'size', label: <Link href={"/admin/size"}>Kích thước</Link> },
                         {
                             key: 'sub3',
                             label: 'Submenu',

@@ -1,7 +1,7 @@
-// pages/manage-blog-category.tsx
+// pages/manage-blog.tsx
 
 import { auth } from "@/auth";
-import BlogCategoryTable from "@/components/admin/blogcategory/blogcategory.table"; // Cần thay đổi đường dẫn và tên component nếu khác
+import BlogTable from "@/components/admin/blog/blog.table"; // Cập nhật đường dẫn và tên component nếu khác
 import { sendRequest } from "@/utils/api";
 
 interface IProps {
@@ -13,15 +13,15 @@ interface IProps {
     };
 }
 
-const ManageBlogCategoryPage = async (props: IProps) => {
+const ManageBlogPage = async (props: IProps) => {
     const current = props?.searchParams?.current ?? 1;
     const pageSize = props?.searchParams?.pageSize ?? 10;
     const session = await auth();
 
     const res = await sendRequest<IBackendRes<any>>({
-        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/blog-categories`, // Cập nhật URL cho blog categories
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/blogs`, // Cập nhật URL cho blogs
         method: "GET",
-        queryParams: {  
+        queryParams: {
             current,
             pageSize,
         },
@@ -29,14 +29,14 @@ const ManageBlogCategoryPage = async (props: IProps) => {
             Authorization: `Bearer ${session?.user?.access_token}`
         },
         nextOption: {
-            next: { tags: ['list-blog-categories'] } // Thay đổi tag cho danh mục blog
+            next: { tags: ['list-blogs'] } // Thay đổi tag cho danh sách blog
         }
     });
 
     return (
         <div>
-            <BlogCategoryTable 
-              
+            <BlogTable 
+                token={session?.user?.access_token}
                 data={res?.data?.data || []}  
                 meta={res?.data?.meta}
             />
@@ -44,4 +44,4 @@ const ManageBlogCategoryPage = async (props: IProps) => {
     );
 }
 
-export default ManageBlogCategoryPage;
+export default ManageBlogPage;

@@ -144,7 +144,7 @@ const UserTable = (props: IProps) => {
                         pageSize: meta.pageSize,
                         showSizeChanger: false,
                         total: meta.total,
-                        showTotal: (total, range) => {return (<div>{range[0]}-{range[1]} của {total} items</div>)}
+                        showTotal: (total, range) => {return (<div>{range[0]}-{range[1]} của {total} mục</div>)}
                     }
                 }
                 onChange={onChange}

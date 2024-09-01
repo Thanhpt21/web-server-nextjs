@@ -4,6 +4,9 @@ import Menu from "antd/es/menu";
 import {
     AppleOutlined,
     AppstoreOutlined,
+    CalculatorOutlined,
+    CommentOutlined,
+    GiftOutlined,
     HomeOutlined,
     MailOutlined,
     MonitorOutlined,
@@ -57,6 +60,11 @@ const AdminSideBar = () => {
                     icon: <AppleOutlined />,
                 },
                 {
+                    key: "enquiry",
+                    label: <Link href={"/admin/enquiry"}>Liên hệ</Link>,
+                    icon: <CommentOutlined />,
+                },
+                {
                     key: 'cate',
                     label: 'Danh mục',
                     icon: <ProductOutlined />,
@@ -67,34 +75,42 @@ const AdminSideBar = () => {
                     ],
                 },
                 {
+                    key: 'marketing',
+                    label: 'Thương mại',
+                    icon: <CalculatorOutlined />,
+                    children: [
+                        { key: 'coupon', label: <Link href={"/admin/coupon"}>Mã giảm giá</Link> },
+                        { key: 'ship', label: <Link href={"/admin/ship"}>Phí ship</Link> },
+                    ],
+                },
+                {
                     key: 'properties',
                     label: 'Thuộc tính',
                     icon: <AppstoreOutlined />,
                     children: [
                         { key: 'color', label: <Link href={"/admin/color"}>Màu sắc</Link> },
                         { key: 'size', label: <Link href={"/admin/size"}>Kích thước</Link> },
-                        {
-                            key: 'sub3',
-                            label: 'Submenu',
-                            children: [
-                                { key: '7', label: 'Option 7' },
-                                { key: '8', label: 'Option 8' },
-                            ],
-                        },
+                        // {
+                        //     key: 'sub3',
+                        //     label: 'Submenu',
+                        //     children: [
+                        //         { key: '7', label: 'Option 7' },
+                        //         { key: '8', label: 'Option 8' },
+                        //     ],
+                        // },
                     ],
                 },
                 {
                     type: 'divider',
                 },
                 {
-                    key: 'sub4',
-                    label: 'Navigation Three',
+                    key: 'setting',
+                    label: 'Cài đặt',
                     icon: <SettingOutlined />,
                     children: [
-                        { key: '9', label: 'Option 9' },
-                        { key: '10', label: 'Option 10' },
-                        { key: '11', label: 'Option 11' },
-                        { key: '12', label: 'Option 12' },
+                        { key: 'config', label: <Link href={"/admin/config"}>Cấu hình</Link> },
+                        { key: 'store', label: 'Chi nhánh' },
+                        { key: 'Menu', label: 'Menu' },
                     ],
                 },
             ],

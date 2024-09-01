@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";
 import BrandCreate from "./brand.create";
 import BrandUpdate from "./brand.update";
-import { handleDeleteBrandAction, fetchCategories, fetchBrands } from "@/utils/actions/brand.action";
+import { handleDeleteBrandAction, fetchCategories } from "@/utils/actions/brand.action";
 
 const { Option } = Select;
 
@@ -32,51 +32,45 @@ const BrandTable = (props: IProps) => {
     const [dataUpdate, setDataUpdate] = useState<any>(null);
     const [categories, setCategories] = useState<any[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
-    const [brandsData, setBrandsData] = useState<any[]>(data);
-    const [brandsMeta, setBrandsMeta] = useState(meta);
 
-    // Lưu trữ dữ liệu gốc
-    const [initialData, setInitialData] = useState<any[]>(data);
-
+    // Fetch categories on mount
     useEffect(() => {
-        fetchCategories().then(res => {
-            if (res?.data) {
-                setCategories(res.data.data);
+        const fetchCategoriesData = async () => {
+            try {
+                const res = await fetchCategories();
+                if (res?.data) {
+                    setCategories(res.data.data);
+                }
+            } catch (error) {
+                console.error('Error fetching categories:', error);
             }
-        });
+        };
+
+        fetchCategoriesData();
     }, []);
 
-
-    const fetchAndSetBrands = async () => {
-        const params = new URLSearchParams(searchParams as URLSearchParams);
-        const current = parseInt(params.get('current') || '1', 10);
-        const pageSize = parseInt(params.get('pageSize') || '10', 10);
-        const category = selectedCategory;
-
-        try {
-            const response = await fetchBrands(current, pageSize, category);
-            if (response?.data) {
-                setBrandsData(response.data.data);
-                setBrandsMeta(response.data.meta);
-            }
-        } catch (error) {
-            console.error('Error fetching brands:', error);
-        }
-    };
-
+    // Handle search with category filter
     const handleSearch = () => {
-        fetchAndSetBrands();
+        const params = new URLSearchParams(searchParams as URLSearchParams);
+
+        // Add or update category parameter
+        if (selectedCategory) {
+            params.set('category', selectedCategory);
+        } else {
+            params.delete('category'); // Remove category parameter if not selected
+        }
+
+        params.set('current', '1'); // Reset to page 1 when searching
+        replace(`${pathname}?${params.toString()}`);
     };
 
+    // Handle reset
     const handleReset = () => {
         setSelectedCategory(undefined);
         const params = new URLSearchParams(searchParams as URLSearchParams);
-        params.delete('category');
+        params.delete('category'); // Remove category parameter
+        params.delete('current');
         replace(`${pathname}?${params.toString()}`);
-        
-        // Khôi phục dữ liệu ban đầu
-        setBrandsData(initialData);
-        setBrandsMeta(meta);
     };
 
     const columns = [
@@ -148,6 +142,7 @@ const BrandTable = (props: IProps) => {
         if (pagination && pagination.current) {
             const params = new URLSearchParams(searchParams as URLSearchParams);
             params.set('current', pagination.current.toString());
+            params.set('pageSize', pagination.pageSize.toString());
             replace(`${pathname}?${params.toString()}`);
         }
     };
@@ -178,19 +173,24 @@ const BrandTable = (props: IProps) => {
                         <Option key={cat._id} value={cat._id}>{cat.title}</Option>
                     ))}
                 </Select>
-                <Button type="primary" onClick={handleSearch}>Tìm kiếm</Button>
+                <Button
+                    type="primary"
+                    onClick={handleSearch}
+                >
+                    Tìm kiếm
+                </Button>
                 <Button onClick={handleReset}>Lọc lại</Button>
             </div>
             <Table
                 bordered
-                dataSource={brandsData}
+                dataSource={data}
                 columns={columns}
                 rowKey="_id"
                 pagination={{
-                    current: brandsMeta.current,
-                    pageSize: brandsMeta.pageSize,
+                    current: meta.current,
+                    pageSize: meta.pageSize,
                     showSizeChanger: false,
-                    total: brandsMeta.total,
+                    total: meta.total,
                     showTotal: (total, range) => <div>{range[0]}-{range[1]} của {total} mục</div>
                 }}
                 onChange={onChange}

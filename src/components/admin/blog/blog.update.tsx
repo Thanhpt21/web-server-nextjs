@@ -12,17 +12,16 @@ interface IProps {
     dataUpdate: any;
     setDataUpdate: (data: any) => void;
     token: string;
-    onUpdateSuccess: () => void;
 }
 
-const BlogUpdate: React.FC<IProps> = ({ isUpdateModalOpen, setIsUpdateModalOpen, dataUpdate, setDataUpdate, token, onUpdateSuccess }) => {
+const BlogUpdate: React.FC<IProps> = ({ isUpdateModalOpen, setIsUpdateModalOpen, dataUpdate, setDataUpdate, token }) => {
+    const [form] = Form.useForm();
     const [imageUrl, setImageUrl] = useState<string | undefined>(dataUpdate?.image);
     const [blogCategories, setBlogCategories] = useState<any[]>([]);
-    const [selectedCategories, setSelectedCategories] = useState<string[]>(dataUpdate?.category || []);
+    
     const [contentSections, setContentSections] = useState<any[]>(dataUpdate?.content || []);
-    const [form] = Form.useForm();
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-    console.log("contentSections", dataUpdate)
 
     useEffect(() => {
         if (isUpdateModalOpen) {
@@ -43,8 +42,10 @@ const BlogUpdate: React.FC<IProps> = ({ isUpdateModalOpen, setIsUpdateModalOpen,
                     description: dataUpdate.description,
                 });
                 setImageUrl(dataUpdate.image);
-                setSelectedCategories(dataUpdate.category);
                 setContentSections(dataUpdate.content);
+                const categoryIds = dataUpdate.category.map((cat: any) => cat._id);
+                setSelectedCategories(categoryIds);
+               
             }
         }
     }, [isUpdateModalOpen, dataUpdate, form]);
@@ -58,7 +59,6 @@ const BlogUpdate: React.FC<IProps> = ({ isUpdateModalOpen, setIsUpdateModalOpen,
         setDataUpdate(null);
     };
 
-    console.log("contentSections", contentSections)
 
     const onFinish = async (values: any) => {
         const { title, description } = values;
@@ -74,7 +74,6 @@ const BlogUpdate: React.FC<IProps> = ({ isUpdateModalOpen, setIsUpdateModalOpen,
             if (res?.data) {
                 handleCloseModal();
                 message.success("Blog đã được cập nhật thành công");
-                onUpdateSuccess();
             } else {
                 notification.error({
                     message: "Lỗi",

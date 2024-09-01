@@ -2,9 +2,9 @@
 
 import { Modal, Form, Input, Button, message, notification, Checkbox } from 'antd';
 import React, { useState, useEffect } from 'react';
-import UploadImage from '@/components/common/UploadImage'; // Import UploadImage component
 import { handleCreateBrandAction } from '@/utils/actions/brand.action'; // Function to handle brand creation
 import { fetchCategories } from '@/utils/actions/brand.action'; // Function to fetch categories
+import UploadImageCrop from '@/components/common/UploadImageCrop';
 
 interface IProps {
     isCreateModalOpen: boolean;
@@ -17,9 +17,9 @@ const BrandCreate: React.FC<IProps> = ({ isCreateModalOpen, setIsCreateModalOpen
     const [imageUrl, setImageUrl] = useState<string | undefined>();
     const [categories, setCategories] = useState<any[]>([]);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    const [loading, setLoading] = useState(false); // Add loading state
 
     useEffect(() => {
-        // Fetch categories when the modal is opened
         if (isCreateModalOpen) {
             fetchCategories().then(res => {
                 if (res?.data) {
@@ -37,17 +37,19 @@ const BrandCreate: React.FC<IProps> = ({ isCreateModalOpen, setIsCreateModalOpen
     const handleCloseModal = () => {
         form.resetFields();
         setIsCreateModalOpen(false);
-        setImageUrl(undefined); // Reset imageUrl
-        setSelectedCategories([]); // Reset selected categories
+        setImageUrl(undefined);
+        setSelectedCategories([]);
     };
 
     const onFinish = async (values: any) => {
+        if (loading) return; // Prevent multiple submissions
+        setLoading(true);
         const { title } = values;
         try {
             const res = await handleCreateBrandAction({
                 title,
-                image: imageUrl, // Include image URL in the payload
-                category: selectedCategories // Include selected categories
+                image: imageUrl,
+                category: selectedCategories
             });
             if (res?.data) {
                 handleCloseModal();
@@ -63,6 +65,8 @@ const BrandCreate: React.FC<IProps> = ({ isCreateModalOpen, setIsCreateModalOpen
                 message: "Tạo thất bại",
                 description: "Có lỗi xảy ra khi tạo dữ liệu."
             });
+        } finally {
+            setLoading(false); // Ensure loading state is reset
         }
     };
 
@@ -79,7 +83,7 @@ const BrandCreate: React.FC<IProps> = ({ isCreateModalOpen, setIsCreateModalOpen
             title="Tạo Thương Hiệu"
             open={isCreateModalOpen}
             onCancel={handleCloseModal}
-            footer={null} // Use custom footer
+            footer={null}
         >
             <Form
                 form={form}
@@ -90,7 +94,7 @@ const BrandCreate: React.FC<IProps> = ({ isCreateModalOpen, setIsCreateModalOpen
                     label="Hình ảnh"
                     name="image"
                 >
-                    <UploadImage
+                    <UploadImageCrop
                         imageUrl={imageUrl}
                         onImageUpload={(url) => setImageUrl(url)}
                         token={token}
@@ -124,6 +128,7 @@ const BrandCreate: React.FC<IProps> = ({ isCreateModalOpen, setIsCreateModalOpen
                         style={{ marginLeft: '8px' }}
                         type="primary"
                         htmlType="submit"
+                        loading={loading} // Add loading state to button
                     >
                         Tạo
                     </Button>

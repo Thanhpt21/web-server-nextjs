@@ -16,6 +16,7 @@ interface IProps {
 const ManageBlogPage = async (props: IProps) => {
     const current = props?.searchParams?.current ?? 1;
     const pageSize = props?.searchParams?.pageSize ?? 10;
+    const category = props?.searchParams?.category
     const session = await auth();
 
     const res = await sendRequest<IBackendRes<any>>({
@@ -24,6 +25,7 @@ const ManageBlogPage = async (props: IProps) => {
         queryParams: {
             current,
             pageSize,
+            ...(category ? { category } : {}),
         },
         headers: {
             Authorization: `Bearer ${session?.user?.access_token}`

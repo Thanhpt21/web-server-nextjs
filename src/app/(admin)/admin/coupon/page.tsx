@@ -1,5 +1,7 @@
+// pages/manage-coupon.tsx
+
 import { auth } from "@/auth";
-import BrandTable from "@/components/admin/brand/brand.table"; // Đổi thành BrandTable
+import CouponTable from "@/components/admin/coupon/coupon.table"; // Cần thay đổi đường dẫn và tên component nếu khác
 import { sendRequest } from "@/utils/api";
 
 interface IProps {
@@ -11,38 +13,34 @@ interface IProps {
     };
 }
 
-const ManageBrandPage = async (props: IProps) => {
+const ManageCouponPage = async (props: IProps) => {
     const current = props?.searchParams?.current ?? 1;
     const pageSize = props?.searchParams?.pageSize ?? 10;
-    const category = props?.searchParams?.category
     const session = await auth();
 
     const res = await sendRequest<IBackendRes<any>>({
-        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/brands`, // Đổi thành brands
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/coupons`, // Cập nhật URL cho coupons
         method: "GET",
-        queryParams: {
+        queryParams: {  
             current,
             pageSize,
-            ...(category ? { category } : {}),
         },
         headers: {
-            Authorization: `Bearer ${session?.user?.access_token}`,
+            Authorization: `Bearer ${session?.user?.access_token}`
         },
         nextOption: {
-            next: { tags: ['list-brands'] } // Đổi tag thành list-brands
+            next: { tags: ['list-coupons'] } // Thay đổi tag cho danh sách coupon
         }
     });
 
     return (
         <div>
-            <BrandTable 
-                token={session?.user?.access_token}
-                data={res?.data?.data || []}
+            <CouponTable 
+                data={res?.data?.data || []}  
                 meta={res?.data?.meta}
-
             />
         </div>
     );
 }
 
-export default ManageBrandPage;
+export default ManageCouponPage;

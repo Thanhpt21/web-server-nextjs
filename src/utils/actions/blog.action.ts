@@ -62,21 +62,3 @@ export const fetchBlogCategories = async () => {
     return res;
 };
 
-// Lấy danh sách bài viết
-export const fetchBlogs = async (current: number, pageSize: number, category?: string) => {
-    const session = await auth();
-    const queryParams: { [key: string]: any } = { current, pageSize };
-    if (category) queryParams.category = category;
-
-    return sendRequest<IBackendRes<any>>({
-        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/blogs`,
-        method: 'GET',
-        queryParams,
-        headers: {
-            Authorization: `Bearer ${session?.user?.access_token}`,
-        },
-        nextOption: {
-            next: { tags: ['list-blogs'] }
-        }
-    });
-};

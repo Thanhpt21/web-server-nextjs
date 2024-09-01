@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Form, Input, Button, message, notification, Checkbox, Row, Col } from 'antd';
-import UploadImage from '@/components/common/UploadImage';
+import UploadImageCrop from '@/components/common/UploadImageCrop';
 import { handleUpdateBrandAction, fetchCategories } from '@/utils/actions/brand.action';
 
 interface IProps {
@@ -103,7 +103,7 @@ const BrandUpdate: React.FC<IProps> = ({ isUpdateModalOpen, setIsUpdateModalOpen
                             label="Hình ảnh"
                             name="image"
                         >
-                            <UploadImage
+                            <UploadImageCrop
                                 imageUrl={imageUrl}
                                 onImageUpload={(url) => setImageUrl(url)}
                                 token={token}

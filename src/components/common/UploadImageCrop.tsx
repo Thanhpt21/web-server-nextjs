@@ -10,7 +10,7 @@ interface IUploadImageProps {
     token: string;
 }
 
-const UploadImage: React.FC<IUploadImageProps> = ({ imageUrl, onImageUpload, token }) => {
+const UploadImageCrop: React.FC<IUploadImageProps> = ({ imageUrl, onImageUpload, token }) => {
     const [fileList, setFileList] = useState<UploadFile[]>([]);
     const [uploading, setUploading] = useState(false);
 
@@ -55,7 +55,8 @@ const UploadImage: React.FC<IUploadImageProps> = ({ imageUrl, onImageUpload, tok
     };
 
     return (
-        <Upload
+        <ImgCrop rotationSlider>
+            <Upload
                 customRequest={handleUploadImage}
                 fileList={fileList}
                 onChange={handleChange}
@@ -76,8 +77,8 @@ const UploadImage: React.FC<IUploadImageProps> = ({ imageUrl, onImageUpload, tok
                     </div>
                 )}
             </Upload>
+        </ImgCrop>
     );
 };
 
-export default UploadImage;
-
+export default UploadImageCrop;

@@ -1,4 +1,3 @@
-// utils/actions.ts
 'use server'
 
 import { auth } from "@/auth";
@@ -49,6 +48,7 @@ export const handleDeleteBrandAction = async (id: string) => {
     return res;
 };
 
+// Lấy danh mục
 export const fetchCategories = async () => {
     const session = await auth();
     const res = await sendRequest<IBackendRes<any>>({
@@ -61,20 +61,3 @@ export const fetchCategories = async () => {
     return res;
 };
 
-export const fetchBrands = async (current: number, pageSize: number, category?: string) => {
-    const session = await auth();
-    const queryParams: { [key: string]: any } = { current, pageSize };
-    if (category) queryParams.category = category;
-
-    return sendRequest<IBackendRes<any>>({
-        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/brands`,
-        method: 'GET',
-        queryParams,
-        headers: {
-            Authorization: `Bearer ${session?.user?.access_token}`,
-        },
-        nextOption: {
-            next: { tags: ['list-brands'] }
-        }
-    });
-};

@@ -12,10 +12,9 @@ interface IProps {
     isCreateModalOpen: boolean;
     setIsCreateModalOpen: (v: boolean) => void;
     token: string; // Pass token as a prop
-    onCreateSuccess: () => void; // Thêm prop mới
 }
 
-const BlogCreate: React.FC<IProps> = ({ isCreateModalOpen, setIsCreateModalOpen, token, onCreateSuccess }) => {
+const BlogCreate: React.FC<IProps> = ({ isCreateModalOpen, setIsCreateModalOpen, token }) => {
     const [imageUrl, setImageUrl] = useState<string | undefined>();
     const [blogCategories, setBlogCategories] = useState<any[]>([]);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -62,7 +61,6 @@ const BlogCreate: React.FC<IProps> = ({ isCreateModalOpen, setIsCreateModalOpen,
             if (res?.data) {
                 handleCloseModal();
                 message.success("Blog đã được tạo thành công");
-                onCreateSuccess(); // Gọi callback sau khi thành công
             } else {
                 notification.error({
                     message: "Lỗi",

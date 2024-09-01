@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { handleUpdateUserAction } from '@/utils/actions/user.actions';
 import { Modal, Form, Input, Button, message, notification, Row, Col } from 'antd';
-import UploadImage from '@/components/common/UploadImage'; // Import the UploadImage component
+import UploadImageCrop from '@/components/common/UploadImageCrop'; // Import the UploadImage component
 
 interface IProps {
   isUpdateModalOpen: boolean;
@@ -83,7 +83,7 @@ const UserUpdate: React.FC<IProps> = (props) => {
               label="Ảnh đại diện"
               name="image"
             >
-              <UploadImage
+              <UploadImageCrop
                 imageUrl={imageUrl}
                 onImageUpload={(url) => setImageUrl(url)}
                 token={token}

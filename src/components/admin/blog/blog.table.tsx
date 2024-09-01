@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";
 import BlogCreate from "./blog.create";
 import BlogUpdate from "./blog.update";
-import { handleDeleteBlogAction, fetchBlogCategories, fetchBlogs } from "@/utils/actions/blog.action"; // Cập nhật import
+import { handleDeleteBlogAction, fetchBlogCategories } from "@/utils/actions/blog.action"; // Cập nhật import
 
 const { Option } = Select;
 
@@ -32,11 +32,9 @@ const BlogTable = (props: IProps) => {
     const [dataUpdate, setDataUpdate] = useState<any>(null);
     const [categories, setCategories] = useState<any[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
-    const [blogsData, setBlogsData] = useState<any[]>(data);
-    const [blogsMeta, setBlogsMeta] = useState(meta);
 
-    // Lưu trữ dữ liệu gốc
-    const [initialData, setInitialData] = useState<any[]>(data);
+
+
 
     useEffect(() => {
         fetchBlogCategories().then(res => {
@@ -47,39 +45,29 @@ const BlogTable = (props: IProps) => {
     }, []);
 
 
-    const fetchAndSetBlogs = async () => {
-        const params = new URLSearchParams(searchParams as URLSearchParams);
-        const current = parseInt(params.get('current') || '1', 10);
-        const pageSize = parseInt(params.get('pageSize') || '10', 10);
-        const category = selectedCategory;
-
-        try {
-            const response = await fetchBlogs(current, pageSize, category);
-            if (response?.data) {
-                setBlogsData(response.data.data);
-                setBlogsMeta(response.data.meta);
-            }
-        } catch (error) {
-            console.error('Error fetching blogs:', error);
-        }
-    };
-
     const handleSearch = () => {
-        fetchAndSetBlogs();
+        const params = new URLSearchParams(searchParams as URLSearchParams);
+        if (selectedCategory) {
+            params.set('category', selectedCategory);
+        } else {
+            params.delete('category');
+        }
+
+        params.set('current', '1');
+        replace(`${pathname}?${params.toString()}`);
     };
 
+    // Handle reset
     const handleReset = () => {
         setSelectedCategory(undefined);
         const params = new URLSearchParams(searchParams as URLSearchParams);
-        params.delete('category');
+        params.delete('category'); // Remove category parameter
+        params.delete('current');
         replace(`${pathname}?${params.toString()}`);
-        
-        // Khôi phục dữ liệu ban đầu
-        setBlogsData(initialData);
-        setBlogsMeta(meta);
     };
 
-    console.log("categories", categories) 
+
+
 
     const columns = [
         {
@@ -119,6 +107,14 @@ const BlogTable = (props: IProps) => {
             ),
         },
         {
+            title: 'Tác giả',
+            dataIndex: 'author',
+        },
+        {
+            title: 'Lượt xem',
+            dataIndex: 'numberViews',
+        },
+        {
             title: 'Hành động',
             width: 110,
             render: (text: any, record: any) => (
@@ -156,9 +152,6 @@ const BlogTable = (props: IProps) => {
         }
     };
 
-    const handleCreateSuccess = () => {
-        fetchAndSetBlogs(); // Gọi hàm để làm mới dữ liệu
-    };
 
 
     return (
@@ -192,14 +185,14 @@ const BlogTable = (props: IProps) => {
             </div>
             <Table
                 bordered
-                dataSource={blogsData}
+                dataSource={data}
                 columns={columns}
                 rowKey="_id"
                 pagination={{
-                    current: blogsMeta.current,
-                    pageSize: blogsMeta.pageSize,
+                    current: meta.current,
+                    pageSize: meta.pageSize,
                     showSizeChanger: false,
-                    total: blogsMeta.total,
+                    total: meta.total,
                     showTotal: (total, range) => <div>{range[0]}-{range[1]} của {total} mục</div>
                 }}
                 onChange={onChange}
@@ -208,7 +201,6 @@ const BlogTable = (props: IProps) => {
                 isCreateModalOpen={isCreateModalOpen}
                 setIsCreateModalOpen={setIsCreateModalOpen}
                 token={token}
-                onCreateSuccess={handleCreateSuccess} // Truyền callback
             />
             <BlogUpdate
                 isUpdateModalOpen={isUpdateModalOpen}
@@ -216,7 +208,6 @@ const BlogTable = (props: IProps) => {
                 dataUpdate={dataUpdate}
                 setDataUpdate={setDataUpdate}
                 token={token}
-                onUpdateSuccess={fetchAndSetBlogs}
             />
         </>
     );

@@ -72,7 +72,7 @@ const UploadImage: React.FC<IUploadImageProps> = ({ imageUrl, onImageUpload, tok
                     <img src={fileList[0]?.url || imageUrl} alt="avatar" style={{ width: '100%' }} />
                 ) : (
                     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        {uploading ? 'Uploading...' : 'Upload'}
+                        {uploading ? 'Đang tải lên...' : 'Tải lên'}
                     </div>
                 )}
             </Upload>

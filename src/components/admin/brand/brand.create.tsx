@@ -34,6 +34,7 @@ const BrandCreate: React.FC<IProps> = ({ isCreateModalOpen, setIsCreateModalOpen
         }
     }, [isCreateModalOpen]);
 
+
     const handleCloseModal = () => {
         form.resetFields();
         setIsCreateModalOpen(false);

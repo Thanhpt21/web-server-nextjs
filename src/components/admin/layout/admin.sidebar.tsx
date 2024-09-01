@@ -109,7 +109,7 @@ const AdminSideBar = () => {
                     icon: <SettingOutlined />,
                     children: [
                         { key: 'config', label: <Link href={"/admin/config"}>Cấu hình</Link> },
-                        { key: 'store', label: 'Chi nhánh' },
+                        { key: 'store', label: <Link href={"/admin/store"}>Chi nhánh</Link> },
                         { key: 'Menu', label: 'Menu' },
                     ],
                 },

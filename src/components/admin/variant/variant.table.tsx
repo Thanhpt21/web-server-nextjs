@@ -1,14 +1,13 @@
-'use client';
+'use client'
 
-import { Button, Popconfirm, Table, Select } from "antd";
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { Button, Popconfirm, Table } from "antd";
+import { usePathname, useSearchParams, useRouter, useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";
-import BrandCreate from "./brand.create";
-import BrandUpdate from "./brand.update";
-import { handleDeleteBrandAction, fetchCategories } from "@/utils/actions/brand.action";
-
-const { Option } = Select;
+import VariantCreate from "./variant.create"; // Đổi thành VariantCreate
+import VariantUpdate from "./variant.update"; // Đổi thành VariantUpdate
+import { handleDeleteVariantAction, fetchProductById } from "@/utils/actions/variant.action"; // Hàm xử lý xóa biến thể
+import { formatCurrency } from "@/utils/helpers";
 
 interface IProps {
     data: any[],
@@ -18,58 +17,43 @@ interface IProps {
         pages: number,
         total: number
     },
-    token: any
+    token: any,
+    productId: any,
+    currentProduct: any,
 }
 
-const BrandTable = (props: IProps) => {
-    const { data, meta, token } = props;
+const VariantTable = (props: IProps) => {
+    const { data, meta, token, productId, currentProduct } = props;
     const searchParams = useSearchParams();
     const pathname = usePathname();
-    const { replace } = useRouter();
+    const { replace, back } = useRouter();
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
     const [dataUpdate, setDataUpdate] = useState<any>(null);
-    const [categories, setCategories] = useState<any[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
+    const [productName, setProductName] = useState<string | undefined>();
 
-    // Fetch categories on mount
     useEffect(() => {
-        const fetchCategoriesData = async () => {
-            try {
-                const res = await fetchCategories();
-                if (res?.data) {
-                    setCategories(res.data.data);
+        const fetchProduct = async () => {
+            if (productId) {
+                try {
+                    const response = await fetchProductById(productId);
+                    if (response?.data) {
+                        setProductName(response.data.title); // Hoặc trường chứa tên sản phẩm từ dữ liệu
+                    } else {
+                        // Xử lý lỗi nếu không có dữ liệu
+                        console.error("Không tìm thấy sản phẩm.");
+                    }
+                } catch (error) {
+                    console.error("Có lỗi xảy ra khi lấy sản phẩm:", error);
                 }
-            } catch (error) {
-                console.error('Error fetching categories:', error);
             }
         };
+    
+        fetchProduct();
+    }, [productId]);
 
-        fetchCategoriesData();
-    }, []);
-
-
-    const handleSearch = () => {
-        const params = new URLSearchParams(searchParams as URLSearchParams);
-        if (selectedCategory) {
-            params.set('category', selectedCategory);
-        } else {
-            params.delete('category');
-        }
-
-        params.set('current', '1');
-        replace(`${pathname}?${params.toString()}`);
-    };
-
-
-    const handleReset = () => {
-        setSelectedCategory(undefined);
-        const params = new URLSearchParams(searchParams as URLSearchParams);
-        params.delete('category'); 
-        params.delete('current');
-        replace(`${pathname}?${params.toString()}`);
-    };
+    console.log("prodName", productName)
 
     const columns = [
         {
@@ -84,26 +68,35 @@ const BrandTable = (props: IProps) => {
         {
             title: 'Hình ảnh',
             width: 100,
-            dataIndex: 'image',
-            render: (image: string) => (
+            dataIndex: 'thumb',
+            render: (thumb: string) => (
                 <div className="flex justify-center items-center">
                     <img
-                        src={image}
-                        alt="Brand Image"
-                        className="w-10 h-10 object-cover"
+                        src={thumb}
+                        alt="Thumbnail"
+                        className="w-10 h-10 rounded object-cover"
                     />
                 </div>
-            )
+            ),
         },
         {
-            title: 'Tên thương hiệu',
+            title: 'Tên',
             dataIndex: 'title',
         },
         {
-            title: 'Danh mục',
-            dataIndex: 'category',
-            render: (categories: any[]) => (
-                <span>{categories.map(cat => cat.title).join(', ')}</span>
+            title: 'Mã SP',
+            dataIndex: 'code',
+        },
+        {
+            title: "Giá / Giá giảm",
+            render: (text: any, record: any) => (
+                <span>{formatCurrency(record?.price || 0)} / {formatCurrency(record?.discount || 0)}</span>
+            ),
+        },
+        {
+            title: "Màu sắc",
+            render: (item: any, record: any) => (
+                <span>{record?.colors?.map((color: any) => color?.title).join(', ')}</span>
             ),
         },
         {
@@ -122,8 +115,8 @@ const BrandTable = (props: IProps) => {
                     <Popconfirm
                         placement="leftTop"
                         title="Xóa"
-                        description="Bạn có chắc chắn muốn xóa thương hiệu này không?"
-                        onConfirm={() => handleDeleteBrandAction(record._id)}
+                        description="Bạn có chắc chắn muốn xóa biến thể này không?"
+                        onConfirm={() => handleDeleteVariantAction(record._id)}
                         okText="Có"
                         cancelText="Không"
                     >
@@ -140,10 +133,10 @@ const BrandTable = (props: IProps) => {
         if (pagination && pagination.current) {
             const params = new URLSearchParams(searchParams as URLSearchParams);
             params.set('current', pagination.current.toString());
-            params.set('pageSize', pagination.pageSize.toString());
             replace(`${pathname}?${params.toString()}`);
         }
     };
+
 
     return (
         <>
@@ -152,32 +145,22 @@ const BrandTable = (props: IProps) => {
                 alignItems: "center",
                 marginBottom: 20
             }}>
-                <span>Danh sách thương hiệu</span>
+                <span>
+                  
+                    {productName ? (
+                        <a onClick={() => replace(`/admin/product?current=${currentProduct}`)} className="text-gray-500 hover:text-black cursor-pointer">
+                            {productName}
+                        </a>
+                    ) : "Loading..."} / 
+
+                    Danh sách biến thể: 
+                </span>
                 <Button
                     type="primary"
                     onClick={() => setIsCreateModalOpen(true)}
                 >
                     Tạo mới
                 </Button>
-            </div>
-            <div style={{ display: "flex", gap: "8px", marginBottom: '10px' }}>
-                <Select
-                    style={{ width: 200 }}
-                    placeholder="Chọn danh mục"
-                    value={selectedCategory}
-                    onChange={value => setSelectedCategory(value)}
-                >
-                    {categories.map(cat => (
-                        <Option key={cat._id} value={cat._id}>{cat.title}</Option>
-                    ))}
-                </Select>
-                <Button
-                    type="primary"
-                    onClick={handleSearch}
-                >
-                    Tìm kiếm
-                </Button>
-                <Button onClick={handleReset}>Lọc lại</Button>
             </div>
             <Table
                 bordered
@@ -193,12 +176,13 @@ const BrandTable = (props: IProps) => {
                 }}
                 onChange={onChange}
             />
-            <BrandCreate
+            <VariantCreate
+                productId={productId}
                 isCreateModalOpen={isCreateModalOpen}
                 setIsCreateModalOpen={setIsCreateModalOpen}
                 token={token}
             />
-            <BrandUpdate
+            <VariantUpdate
                 isUpdateModalOpen={isUpdateModalOpen}
                 setIsUpdateModalOpen={setIsUpdateModalOpen}
                 dataUpdate={dataUpdate}
@@ -207,6 +191,6 @@ const BrandTable = (props: IProps) => {
             />
         </>
     );
-};
+}
 
-export default BrandTable;
+export default VariantTable;

@@ -1,13 +1,16 @@
 'use client'
 
-import { Button, Popconfirm, Table } from "antd";
+import { Button, Popconfirm, Select, Table } from "antd";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { useState } from "react";
-import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";
+import { useEffect, useState } from "react";
+import { DeleteTwoTone, EditTwoTone, SkinOutlined } from "@ant-design/icons";
 import ProductCreate from "./product.create";
 import ProductUpdate from "./product.update";
-import { handleDeleteProductAction } from "@/utils/actions/product.action"; // Hàm xử lý xóa sản phẩm
+import { handleDeleteProductAction, getVariantByProduct, fetchCategories } from "@/utils/actions/product.action"; // Hàm xử lý xóa sản phẩm
 import { formatCurrency } from "@/utils/helpers";
+
+
+const { Option } = Select;
 
 interface IProps {
     data: any[],
@@ -29,6 +32,33 @@ const ProductTable = (props: IProps) => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
     const [dataUpdate, setDataUpdate] = useState<any>(null);
+    const [categories, setCategories] = useState<any[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
+
+      // State to keep track of current and pageSize
+      const [currentPage, setCurrentPage] = useState(meta.current);
+      const [pageSize, setPageSize] = useState(meta.pageSize);
+  
+      useEffect(() => {
+          setCurrentPage(meta.current);
+          setPageSize(meta.pageSize);
+      }, [meta.current, meta.pageSize]);
+
+     // Fetch categories on mount
+     useEffect(() => {
+        const fetchCategoriesData = async () => {
+            try {
+                const res = await fetchCategories();
+                if (res?.data) {
+                    setCategories(res.data.data);
+                }
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        };
+
+        fetchCategoriesData();
+    }, []);
 
     const columns = [
         {
@@ -99,6 +129,11 @@ const ProductTable = (props: IProps) => {
                             <DeleteTwoTone twoToneColor="#ff4d4f" />
                         </span>
                     </Popconfirm>
+                    <SkinOutlined
+                        twoToneColor="#52c41a"
+                        className="cursor-pointer"
+                        onClick={() => replace(`/admin/variant/${record._id}?currentProduct=${currentPage}`)}
+                    />
                 </div>
             )
         }
@@ -111,6 +146,28 @@ const ProductTable = (props: IProps) => {
             replace(`${pathname}?${params.toString()}`);
         }
     };
+
+    const handleSearch = () => {
+        const params = new URLSearchParams(searchParams as URLSearchParams);
+        if (selectedCategory) {
+            params.set('category', selectedCategory);
+        } else {
+            params.delete('category');
+        }
+
+        params.set('current', '1');
+        replace(`${pathname}?${params.toString()}`);
+    };
+
+
+    const handleReset = () => {
+        setSelectedCategory(undefined);
+        const params = new URLSearchParams(searchParams as URLSearchParams);
+        params.delete('category'); 
+        params.delete('current');
+        replace(`${pathname}?${params.toString()}`);
+    };
+
 
     return (
         <>
@@ -126,6 +183,25 @@ const ProductTable = (props: IProps) => {
                 >
                     Tạo mới
                 </Button>
+            </div>
+            <div style={{ display: "flex", gap: "8px", marginBottom: '10px' }}>
+                <Select
+                    style={{ width: 200 }}
+                    placeholder="Chọn danh mục"
+                    value={selectedCategory}
+                    onChange={value => setSelectedCategory(value)}
+                >
+                    {categories.map(cat => (
+                        <Option key={cat._id} value={cat._id}>{cat.title}</Option>
+                    ))}
+                </Select>
+                <Button
+                    type="primary"
+                    onClick={handleSearch}
+                >
+                    Tìm kiếm
+                </Button>
+                <Button onClick={handleReset}>Lọc lại</Button>
             </div>
             <Table
                 bordered

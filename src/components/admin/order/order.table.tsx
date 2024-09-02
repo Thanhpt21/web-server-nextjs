@@ -1,13 +1,12 @@
 'use client';
 
-import { Button, Popconfirm, Table, Select, Tag, Menu, Dropdown } from "antd";
+import { Button, Popconfirm, Table, Select, Tag, Menu, Dropdown, message } from "antd";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";
-import EnquiryCreate from "./enquiry.create";
-import { handleDeleteEnquiryAction, fetchEnquiries, handleUpdateEnquiryAction } from "@/utils/actions/enquiry.action";
-import { statusEnquiry } from "@/utils/contants";
-
+import { handleDeleteOrderAction, handleUpdateOrderAction } from "@/utils/actions/order.action"; // Thay đổi action cho Order
+import { statusOrder } from "@/utils/contants"; // Chỉnh sửa để phù hợp với trạng thái đơn hàng
+import { formatCurrency } from "@/utils/helpers";
 
 const { Option } = Select;
 
@@ -21,18 +20,21 @@ interface IProps {
     },
 }
 
-const EnquiryTable = (props: IProps) => {
+const OrderTable = (props: IProps) => {
     const { data, meta } = props;
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const { replace } = useRouter();
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
+    const [dataUpdate, setDataUpdate] = useState<any>(null);
     const [selectedStatus, setSelectedStatus] = useState<string | undefined>(undefined);
 
     const handleStatusChange = async (id: string, status: number) => {
         try {
-            await handleUpdateEnquiryAction({ _id: id, status }); // Ensure correct data format
+            await handleUpdateOrderAction({ _id: id, status });
+            message.success("Cập nhật trạng thái thành công")
         } catch (error) {
             console.error('Error updating status:', error);
         }
@@ -40,14 +42,13 @@ const EnquiryTable = (props: IProps) => {
 
     const statusMenu = (id: string) => (
         <Menu onClick={({ key }) => handleStatusChange(id, Number(key))}> {/* Convert key to number */}
-            {statusEnquiry.map(option => (
+            {statusOrder.map((option: any) => (
                 <Menu.Item key={option.value} icon={<Tag color={option.color}>{option.label}</Tag>}>
-                    
+                    {option.label}
                 </Menu.Item>
             ))}
         </Menu>
     );
-
 
     const columns = [
         {
@@ -60,26 +61,39 @@ const EnquiryTable = (props: IProps) => {
             )
         },
         {
-            title: 'Tên',
-            dataIndex: 'name',
+            title: 'ID Đơn hàng',
+            dataIndex: '_id',
         },
         {
-            title: 'Điện thoại',
-            dataIndex: 'phone',
+            title: 'Địa chỉ',
+            dataIndex: 'address',
         },
         {
-            title: 'Email',
-            dataIndex: 'email',
+            title: 'Tổng giá',
+            dataIndex: 'total',
+            render: (total: number) => (
+                <span>{formatCurrency(total)}</span> // Sử dụng hàm formatCurrency nếu cần
+            ),
         },
         {
-            title: 'Ghi chú',
-            dataIndex: 'comment',
+            title: 'Phương thức thanh toán',
+            dataIndex: 'methodPayment',
+            render: (methodPayment: number) => (
+                <span>{methodPayment === 1 ? 'Online' : 'COD'}</span> // Chỉnh sửa theo phương thức thanh toán
+            ),
+        },
+        {
+            title: 'Phương thức giao hàng',
+            dataIndex: 'deliveryMethod',
+            render: (deliveryMethod: number) => (
+                <span>{deliveryMethod === 1 ? 'Standard' : 'Express'}</span> // Chỉnh sửa theo phương thức giao hàng
+            ),
         },
         {
             title: 'Trạng thái',
             dataIndex: 'status',
             render: (status: number, record: any) => {
-                const statusOption = statusEnquiry.find(option => option.value === status);
+                const statusOption = statusOrder.find((option: any) => option.value === status);
                 return statusOption ? (
                     <Dropdown overlay={statusMenu(record._id)}>
                         <Tag color={statusOption.color} className="cursor-pointer">
@@ -96,12 +110,11 @@ const EnquiryTable = (props: IProps) => {
             width: 110,
             render: (text: any, record: any) => (
                 <div className="flex justify-center items-center space-x-4">
-                    
                     <Popconfirm
                         placement="leftTop"
                         title="Xóa"
-                        description="Bạn có chắc chắn muốn xóa yêu cầu này không?"
-                        onConfirm={() => handleDeleteEnquiryAction(record._id)}
+                        description="Bạn có chắc chắn muốn xóa đơn hàng này không?"
+                        onConfirm={() => handleDeleteOrderAction(record._id)}
                         okText="Có"
                         cancelText="Không"
                     >
@@ -119,21 +132,19 @@ const EnquiryTable = (props: IProps) => {
         if (selectedStatus) {
             params.set('status', selectedStatus);
         } else {
-            params.delete('status'); 
+            params.delete('status');
         }
-        params.set('current', '1'); 
+        params.set('current', '1');
         replace(`${pathname}?${params.toString()}`);
     };
 
-    // Handle reset
     const handleReset = () => {
         setSelectedStatus(undefined);
         const params = new URLSearchParams(searchParams as URLSearchParams);
-        params.delete('status'); 
+        params.delete('status');
         params.delete('current');
         replace(`${pathname}?${params.toString()}`);
     };
-
 
     const onChange = (pagination: any) => {
         if (pagination && pagination.current) {
@@ -147,16 +158,11 @@ const EnquiryTable = (props: IProps) => {
         <>
             <div style={{
                 display: "flex", justifyContent: "space-between",
-                alignItems: "center",
+                alignItems: "start",
                 marginBottom: 20
             }}>
-                <span>Danh sách yêu cầu</span>
-                <Button
-                    type="primary"
-                    onClick={() => setIsCreateModalOpen(true)}
-                >
-                    Tạo mới
-                </Button>
+                <span>Danh sách Đơn hàng</span>
+             
             </div>
             <div style={{ display: "flex", gap: "8px", marginBottom: '10px' }}>
                 <Select
@@ -165,7 +171,7 @@ const EnquiryTable = (props: IProps) => {
                     value={selectedStatus}
                     onChange={value => setSelectedStatus(value)}
                 >
-                    {statusEnquiry?.map(option => (
+                    {statusOrder?.map((option: any) => (
                         <Option key={option.value} value={option.value}>{option.label}</Option>
                     ))}
                 </Select>
@@ -186,12 +192,8 @@ const EnquiryTable = (props: IProps) => {
                 }}
                 onChange={onChange}
             />
-            <EnquiryCreate
-                isCreateModalOpen={isCreateModalOpen}
-                setIsCreateModalOpen={setIsCreateModalOpen}
-            />
         </>
     );
 };
 
-export default EnquiryTable;
+export default OrderTable;

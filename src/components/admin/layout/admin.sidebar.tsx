@@ -4,6 +4,7 @@ import Menu from "antd/es/menu";
 import {
     AppleOutlined,
     AppstoreOutlined,
+    AuditOutlined,
     CalculatorOutlined,
     CommentOutlined,
     GiftOutlined,
@@ -43,6 +44,11 @@ const AdminSideBar = () => {
                     key: "users",
                     label: <Link href={"/admin/user"}>Tài khoản</Link>,
                     icon: <TeamOutlined />,
+                },
+                {
+                    key: "order",
+                    label: <Link href={"/admin/order"}>Đơn hàng</Link>,
+                    icon: <AuditOutlined />,
                 },
                 {
                     key: "product",

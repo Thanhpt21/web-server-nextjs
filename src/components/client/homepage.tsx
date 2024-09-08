@@ -1,12 +1,9 @@
-'use client'
-    
+import React from 'react'
+
 const HomePage = () => {
-    return (
-<h1 className="text-3xl font-bold underline">
-      Hello world!
-    </h1>
-    )
+  return (
+    <div>HomePage</div>
+  )
 }
 
-export default HomePage;
-
+export default HomePage

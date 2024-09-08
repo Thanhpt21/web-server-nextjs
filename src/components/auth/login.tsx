@@ -3,13 +3,16 @@ import { signIn } from "next-auth/react"
 import { Button, Col, Divider, Form, Input, notification, Row } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import Link from 'next/link';
-import { authenticate } from "@/utils/actions";
 import { useRouter } from "next/navigation";
 import ModalReactive from "./modal.reactive";
 import { useState } from "react";
 import ModalChangePassword from "./modal.change.password";
+import { authenticate } from "@/utils/actions/user.actions";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store";
 
 const Login = () => {
+    const dispatch = useDispatch<AppDispatch>();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [userEmail, setUserEmail] = useState("");
     const [changePassword, setChangePassword] = useState(false);
@@ -17,7 +20,6 @@ const Login = () => {
     const onFinish = async (values: any) => {
         const {username, password} = values;
         const res = await authenticate(username, password)
-
         if(res?.error){
             if(res?.code === 2){
                 setUserEmail(username)
@@ -93,7 +95,7 @@ const Login = () => {
                             </div>
                         </Form.Item>
                     </Form>
-                    <Link href={"/"}><ArrowLeftOutlined /> Quay lại trang chủ</Link>
+                    <Link href={"/home"}><ArrowLeftOutlined /> Quay lại trang chủ</Link>
                     <Divider />
                     <div style={{ textAlign: "center" }}>
                         Chưa có tài khoản? <Link href={"/auth/register"}>Đăng ký tại đây</Link>
